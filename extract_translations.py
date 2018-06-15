@@ -96,8 +96,11 @@ def main():
     for key, value in translatable_strings.items():
         with open("%s.pot" % key, 'w') as f:
             for tstring in value:
+                msgid_string = "\"%s\"" % tstring
+                if "\n" in tstring:
+                    msgid_string = "\"\"\n\"%s\"" % tstring.replace('\n', '\\n"\n"')
                 f.write("msgid \"%s\"\n"
-                        "msgstr \"\"\n\n" % tstring)
+                        "msgstr \"\"\n\n" % msgid_string)
 
 
 
