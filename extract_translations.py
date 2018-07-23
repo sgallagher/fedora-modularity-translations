@@ -72,9 +72,14 @@ def main():
         unique_builds[build['id']] = build
 
     translatable_strings = set()
+    module_streams = set()
     for build_id in unique_builds.keys():
         build = k.getBuild(build_id)
         print("Processing %s:%s" % (build['package_name'], build['nvr']))
+
+        module_streams.add("%s:%s" % (
+            build['extra']['typeinfo']['module']['name'],
+            build['extra']['typeinfo']['module']['stream']))
 
         modulemds = Modulemd.objects_from_string(
             build['extra']['typeinfo']['module']['modulemd_str'])
@@ -89,6 +94,10 @@ def main():
         for profile_name, profile in modulemds[0].peek_profiles().items():
             if profile.props.description:
                 translatable_strings.add(profile.props.description)
+
+    with open ("module_streams.txt", 'w') as f:
+        for module_stream in sorted(module_streams):
+            f.write("%s\n" % module_stream)
 
     with open ("fedora-modularity-translations.pot", 'w') as f:
         for tstring in sorted(translatable_strings):
