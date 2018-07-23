@@ -6,8 +6,6 @@ import koji
 import git
 import gi
 
-from collections import defaultdict
-
 gi.require_version('Modulemd', '1.0')
 from gi.repository import Modulemd
 
@@ -73,7 +71,7 @@ def main():
     for build in tagged_builds:
         unique_builds[build['id']] = build
 
-    translatable_strings = defaultdict(set)
+    translatable_strings = set()
     for build_id in unique_builds.keys():
         build = k.getBuild(build_id)
         print("Processing %s:%s" % (build['package_name'], build['nvr']))
@@ -84,24 +82,21 @@ def main():
         # We should only get a single modulemd document from Koji
         assert len(modulemds) == 1
 
-        tstrings = translatable_strings[build['package_name']]
-        tstrings.add(modulemds[0].props.summary)
-        tstrings.add(modulemds[0].props.description)
+        translatable_strings.add(modulemds[0].props.summary)
+        translatable_strings.add(modulemds[0].props.description)
 
         # Get any profile descriptions
         for profile_name, profile in modulemds[0].peek_profiles().items():
             if profile.props.description:
-                tstrings.add(profile.props.description)
+                translatable_strings.add(profile.props.description)
 
-    for key, value in translatable_strings.items():
-        with open("%s.pot" % key, 'w') as f:
-            for tstring in value:
-                msgid_string = "\"%s\"" % tstring
-                if "\n" in tstring:
-                    msgid_string = "\"\"\n\"%s\"" % tstring.replace('\n', '\\n"\n"')
-                f.write("msgid \"%s\"\n"
-                        "msgstr \"\"\n\n" % msgid_string)
-
+    with open ("fedora-modularity-translations.pot", 'w') as f:
+        for tstring in sorted(translatable_strings):
+            msgid_string = "\"%s\"" % tstring
+            if "\n" in tstring:
+                msgid_string = "\"\"\n\"%s\"" % tstring.replace('\n', '\\n"\n"')
+            f.write("msgid \"%s\"\n"
+                    "msgstr \"\"\n\n" % msgid_string)
 
 
 if __name__ == "__main__":
