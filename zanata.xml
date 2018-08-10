@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <config xmlns="http://zanata.org/namespace/config/">
-    <url>https://translate.zanata.org/</url>
-    <project>fedora-modularity</project>
-    <project-version>fedora29</project-version>
-    <project-type>gettext</project-type>
-    <src-dir>.</src-dir>
-    <trans-dir>.</trans-dir>
-    <rules/>
+  <url>https://fedora.zanata.org/</url>
+  <project>fedora-modularity-translations</project>
+  <project-version>f29</project-version>
+  <project-type>gettext</project-type>
+
 </config>
